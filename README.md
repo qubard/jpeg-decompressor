@@ -3,7 +3,7 @@ jpeg decompressor written in tensorflow
 
 # How does it work?
 
-It's basically an autoencoder (convnet + batchnorm + residual connections) trained on noisy images and their denoised counterparts.
+It's basically an autoencoder (convnet + batchnorm + residual connections) trained on noisy images generated using CIFAR-10 and their denoised counterparts.
 
 # Dependencies
 
