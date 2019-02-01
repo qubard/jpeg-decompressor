@@ -7,6 +7,10 @@ print(batch.shape)
 import matplotlib.pyplot as plt
 import numpy as np
 
-for i in range(0, 10):
-    plt.imshow(np.transpose(batch[i])) # transpose to 32x32x3
-    plt.show()
+from src.network.decompressor import DecompressorNetwork
+
+test = DecompressorNetwork()
+arr = test.eval()
+
+plt.imshow(np.reshape(arr, (32, 32, 3))) # transpose to 32x32x3
+plt.show()
