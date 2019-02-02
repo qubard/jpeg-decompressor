@@ -5,7 +5,7 @@ from src.helpers import compress_numpy_image
 
 from src.cifar import get_training_data
 
-n_samples = 1
+n_samples = 5
 batch = get_training_data('dataset', 1)
 for i in range(1, n_samples):
     batch = np.append(get_training_data('dataset', i), batch, axis=0)

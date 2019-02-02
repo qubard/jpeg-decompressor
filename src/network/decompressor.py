@@ -53,10 +53,10 @@ class DecompressorNetwork():
             self.restore_checkpoint(checkpoint)
 
         n_pairs = int(x.shape[0] / self.batch_size)
-        indices = np.zeros((n_pairs, 2), dtype=np.int32)
+        indices = np.zeros((n_pairs - 1, 2), dtype=np.int32)
 
-        for i in range(1, n_pairs):
-            indices[i] = [(i - 1) * self.batch_size, i * self.batch_size]
+        for i in range(0, indices.shape[0]):
+            indices[i] = [i * self.batch_size, (i + 1) * self.batch_size]
 
         for i in range(checkpoint + 1, n_epochs):
             np.random.shuffle(indices)
@@ -64,10 +64,10 @@ class DecompressorNetwork():
                 indice = indices[index]
                 _, loss = self.sess.run([self.train_op, self.loss], feed_dict=
                 {
-                    self.x : x[indice[0]:indice[1]],
+                    self.x: x[indice[0]:indice[1]],
                     self.y: y[indice[0]:indice[1]]
                 })
                 print("Epoch %s Batch %s Loss: %s" % (i, indice, loss))
-                if i % 10 == 0:
-                    save_path = self.saver.save(self.sess, "checkpoints/model%s.ckpt" % i)
-                    print("Model saved in path: %s" % save_path)
+            if i % 5 == 0:
+                save_path = self.saver.save(self.sess, "checkpoints/model%s.ckpt" % i)
+                print("Model saved in path: %s" % save_path)
