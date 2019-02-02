@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 
 from .ops import conv2d, fully_connected
 
@@ -51,14 +52,22 @@ class DecompressorNetwork():
         if checkpoint >= 0:
             self.restore_checkpoint(checkpoint)
 
+        n_pairs = int(x.shape[0] / self.batch_size)
+        indices = np.zeros((n_pairs, 2), dtype=np.int32)
+
+        for i in range(1, n_pairs):
+            indices[i] = [(i - 1) * self.batch_size, i * self.batch_size]
+
         for i in range(checkpoint + 1, n_epochs):
-            for v in range(1, int(x.shape[0] / self.batch_size)):
+            np.random.shuffle(indices)
+            for index in range(0, indices.shape[0]):
+                indice = indices[index]
                 _, loss = self.sess.run([self.train_op, self.loss], feed_dict=
                 {
-                    self.x : x[(v-1) * self.batch_size : v * self.batch_size],
-                    self.y: y[(v-1) * self.batch_size : v * self.batch_size]
+                    self.x : x[indice[0]:indice[1]],
+                    self.y: y[indice[0]:indice[1]]
                 })
-                print("Epoch %s Batch %s Loss: %s" % (i, v * self.batch_size, loss))
+                print("Epoch %s Batch %s Loss: %s" % (i, indice, loss))
                 if i % 10 == 0:
                     save_path = self.saver.save(self.sess, "checkpoints/model%s.ckpt" % i)
                     print("Model saved in path: %s" % save_path)
