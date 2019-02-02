@@ -14,6 +14,9 @@ class DecompressorNetwork():
         self.model = self.build()
         self.saver = tf.train.Saver()
 
+    def restore_checkpoint(self, checkpoint):
+        self.saver.restore(self.sess, "checkpoints/model%s.ckpt" % checkpoint)
+
     # Evaluate the tensor x on the model
     def eval(self, x):
         return self.sess.run(self.model, feed_dict={self.x: x})
@@ -46,7 +49,7 @@ class DecompressorNetwork():
             raise ValueError("Assigned batch size must be some multiple of the input's batch size!")
 
         if checkpoint >= 0:
-            self.saver.restore(self.sess, "checkpoints/model%s.ckpt" % checkpoint)
+            self.restore_checkpoint(checkpoint)
 
         for i in range(checkpoint + 1, n_epochs):
             for v in range(1, int(x.shape[0] / self.batch_size)):
