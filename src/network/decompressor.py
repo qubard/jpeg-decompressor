@@ -20,6 +20,7 @@ class DecompressorNetwork():
 
     # Build the network architecture
     def build(self):
+        self.y = tf.placeholder(tf.float32, shape=[self.batch_size, 32 * 32 * 3], name='y')
         self.x = tf.placeholder(tf.float32, shape=[self.batch_size, 32, 32, 3], name='x')  # batch_size x 32 x 32 x 3 input (rgb)
         cl_1 = conv2d(self.x, 3, 64)  # batch size x 30 x 30 x 64 feature maps\
 
@@ -32,9 +33,7 @@ class DecompressorNetwork():
         # (batch_size, 14, 14, 128) reshape to (self.batch_size, 14*14*128)
         x_hat = fully_connected(tf.reshape(bn_2, [self.batch_size, 14*14*128]), 32*32*3)
 
-        x = tf.reshape(self.x, [self.batch_size, 32 * 32 * 3]) # Reshape training data
-
-        self.loss = tf.losses.mean_squared_error(x, x_hat)
+        self.loss = tf.losses.mean_squared_error(self.y, x_hat)
         self.train_op = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
 
         # Initialize all variables
@@ -42,13 +41,21 @@ class DecompressorNetwork():
 
         return x_hat
 
-    def train(self, compressed_data, checkpoint=-1, n_epochs=1000):
+    def train(self, x, y, checkpoint=-1, n_epochs=1000):
+        if x.shape[0] % self.batch_size != 0 or y.shape[0] % self.batch_size != 0:
+            raise ValueError("Assigned batch size must be some multiple of the input's batch size!")
+
         if checkpoint >= 0:
             self.saver.restore(self.sess, "checkpoints/model%s.ckpt" % checkpoint)
 
         for i in range(checkpoint + 1, n_epochs):
-            _, loss = self.sess.run([self.train_op, self.loss], feed_dict={self.x : compressed_data})
-            print("Epoch %s Loss: %s" % (i, loss))
-            if i % 10 == 0:
-                save_path = self.saver.save(self.sess, "checkpoints/model%s.ckpt" % i)
-                print("Model saved in path: %s" % save_path)
+            for v in range(1, int(x.shape[0] / self.batch_size)):
+                _, loss = self.sess.run([self.train_op, self.loss], feed_dict=
+                {
+                    self.x : x[(v-1) * self.batch_size : v * self.batch_size],
+                    self.y: y[(v-1) * self.batch_size : v * self.batch_size]
+                })
+                print("Epoch %s Batch %s Loss: %s" % (i, v * self.batch_size, loss))
+                if i % 10 == 0:
+                    save_path = self.saver.save(self.sess, "checkpoints/model%s.ckpt" % i)
+                    print("Model saved in path: %s" % save_path)
