@@ -32,12 +32,7 @@ class DecompressorNetwork():
         # (batch_size, 14, 14, 128) reshape to (self.batch_size, 14*14*128)
         x_hat = fully_connected(tf.reshape(bn_2, [self.batch_size, 14*14*128]), 32*32*3)
 
-        epsilon = 1e-8 # so we don't take log(0)
-
         x = tf.reshape(self.x, [self.batch_size, 32 * 32 * 3]) # Reshape training data
-        #tx = x * tf.log(epsilon + self.x_hat) + (1 - x) * tf.log(epsilon + 1 - self.x_hat)
-
-        #self.loss = -tf.reduce_sum(tx, axis=1)
 
         self.loss = tf.losses.mean_squared_error(x, x_hat)
         self.train_op = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
