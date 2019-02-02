@@ -9,8 +9,17 @@ import numpy as np
 
 from src.network.decompressor import DecompressorNetwork
 
-test = DecompressorNetwork()
-arr = test.eval()
+arr = np.array([np.transpose(batch[i]) / 255 for i in range(0, batch.shape[0])])
 
-plt.imshow(np.reshape(arr, (32, 32, 3))) # transpose to 32x32x3
-plt.show()
+#test = DecompressorNetwork(batch_size=500)
+#test.train(arr[:500])
+
+import tensorflow as tf
+
+a = tf.constant([[1,1,1], [2,1,1]])
+b = tf.constant([[1,0,1,], [2,1,1]]) # ground truth
+
+c = tf.losses.mean_squared_error(b, a)
+
+with tf.Session() as sess:
+    print(sess.run(c))

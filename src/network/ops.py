@@ -17,11 +17,12 @@ def conv2d(x, kernel_size, out_channels, stride=[1,1], activation=tf.nn.elu):
         )
 
 
-def fully_connected(x, n_outputs, activation_fn=tf.nn.elu, normalizer_fn=tf.contrib.layers.batch_norm):
+def fully_connected(x, n_outputs, activation_fn=tf.nn.sigmoid):
     with tf.variable_scope('fc%s' % n_outputs):
         return tf.contrib.layers.fully_connected(
             x,
             n_outputs,
             activation_fn,
-            normalizer_fn
+            biases_initializer=tf.contrib.layers.xavier_initializer(),
+            trainable=True
         )
