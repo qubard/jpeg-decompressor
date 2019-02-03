@@ -60,6 +60,7 @@ class DecompressorNetwork():
 
         for i in range(checkpoint + 1, n_epochs):
             np.random.shuffle(indices)
+            total_loss = 0
             for index in range(0, indices.shape[0]):
                 indice = indices[index]
                 _, loss = self.sess.run([self.train_op, self.loss], feed_dict=
@@ -67,7 +68,8 @@ class DecompressorNetwork():
                     self.x: x[indice[0]:indice[1]],
                     self.y: y[indice[0]:indice[1]]
                 })
-                print("Epoch %s Batch %s Loss: %s" % (i, indice, loss))
+                total_loss += loss
+            print("Epoch %s Batch %s AvgLoss: %s" % (i, indice, total_loss / indices.shape[0]))
             if i % 5 == 0:
                 save_path = self.saver.save(self.sess, "checkpoints/model%s.ckpt" % i)
                 print("Model saved in path: %s" % save_path)
