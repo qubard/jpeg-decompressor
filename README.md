@@ -39,7 +39,7 @@ And install the requirements
 # Training
 To train simply run the training script `python train.py`.
 
-During training we tran on a batch size of 500 over 100,000 images with batch shuffling.
+During training we tran on a batch size of 500 over 50,000 images with batch shuffling.
 
 # Dependencies
 

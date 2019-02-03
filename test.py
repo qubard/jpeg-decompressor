@@ -2,7 +2,7 @@ import numpy as np
 from src.network import DecompressorNetwork
 
 test = DecompressorNetwork(batch_size=1)
-test.restore_checkpoint(25)
+test.restore_checkpoint(5)
 
 from src.helpers import image_to_numpy_array
 
