@@ -3,8 +3,7 @@ jpeg decompressor written in tensorflow
 
 # How does it work?
 
-
-It's a convolutional network trained on noisy images generated using CIFAR-10 and their compressed counterparts. It can be expanded to images past `32x32` by running the decompressor on smaller parts of the larger image you want to decompress.
+It's a convolutional network trained on compressed images generated using CIFAR-10 and their uncompressed counterparts. It can be expanded to images past `32x32` by running the decompressor on smaller parts of the larger image you want to decompress.
 
 There are only 2 convolutional layers, we use `elu` activation, maxpooling and batch norm. The final layer is a fully connected layer. A possible (better) architecture could to add a few `conv2d_transpose` layers to reconstruct the image instead of a `fully_connected` layer.
 
