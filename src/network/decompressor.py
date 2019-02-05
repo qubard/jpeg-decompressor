@@ -48,7 +48,7 @@ class DecompressorNetwork():
         # Initialize all variables
         self.sess.run(tf.global_variables_initializer())
 
-        return cl_4
+        return bn_4
 
     def train(self, x, y, checkpoint=-1, n_epochs=1000):
         if x.shape[0] % self.batch_size != 0 or y.shape[0] % self.batch_size != 0:
