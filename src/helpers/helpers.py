@@ -5,19 +5,22 @@ from PIL import Image
 
 
 # Compress the numpy array as an image to a JPEG
-def compress_numpy_image(arr, quality=50):
+def compress_numpy_image(arr, quality=50, grayscale=False):
     im = Image.fromarray(np.uint8(255 * arr))
     out = io.BytesIO()
     im.save(out, format='JPEG', quality=quality)
     obj = Image.open(out)
-    compressed = np.zeros(arr.shape)
+    compressed = np.zeros(arr.shape, dtype=np.float32)
 
     # Copy each pixel over (no idea if PIL supports np.array copies)
     for x in range(0, arr.shape[0]):
         for y in range(0, arr.shape[1]):
             pixel = obj.getpixel((x, y))
-            for channel in range(0, len(pixel)):
-                compressed[y][x][channel] = pixel[channel] / 255
+            if grayscale:
+                compressed[y][x] = pixel / 255
+            else:
+                for channel in range(0, len(pixel)):
+                    compressed[y][x][channel] = pixel[channel] / 255
 
     return compressed
 
